@@ -1,0 +1,34 @@
+npm install @whiskeysockets/baileys@latest
+
+node server.js
+
+
+Mari kita lakukan "Hard Reset" agar sistem benar-benar bersih dan segar. Ikuti 4 langkah sakti ini secara berurutan:
+
+Langkah 1: Hapus Sesi Lama (Wajib)
+Kadang ada file sesi yang rusak/korup di folder project Anda yang membuat WhatsApp menolak login.
+
+Buka folder wa-blast-ascendo di VS Code.
+Cari folder bernama auth_info_baileys.
+Klik kanan $\rightarrow$ Delete folder tersebut. (Hapus total). Jangan khawatir, folder ini akan dibuat otomatis lagi saat Anda menjalankan server.
+Langkah 2: Sinkronisasi Jam Windows (Sangat Krusial)
+WhatsApp menggunakan protokol keamanan berbasis waktu. Jika jam di laptop Anda berbeda 1-2 detik saja dengan server WhatsApp, QR akan dianggap Invalid.
+
+Klik kanan pada Jam/Tanggal di pojok kanan bawah taskbar Windows Anda.
+Pilih "Adjust date/time".
+Cari tombol "Sync now" (Sinkronkan sekarang) di bawah bagian Synchronize your clock.
+Klik tombol tersebut sampai muncul tanda centang hijau.
+Langkah 3: Update Library Baileys ke Versi Terbaru
+Ada kemungkinan versi library yang Anda install kemarin memiliki bug. Mari kita paksa update ke versi paling stabil.
+
+Buka terminal di VS Code.
+Ketik perintah ini dan tekan Enter:
+npm install @whiskeysockets/baileys@latest
+Langkah 4: Restart Server & Scan Ulang
+Sekarang kita jalankan sistem dalam keadaan bersih:
+
+Di terminal VS Code, matikan server yang sedang jalan (Tekan Ctrl + C).
+Jalankan kembali servernya:
+node server.js
+Buka browser, refresh index.html.
+Scan QR Code-nya.

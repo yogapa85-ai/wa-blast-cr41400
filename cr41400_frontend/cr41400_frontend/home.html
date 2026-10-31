@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <title>COMMAND CENTER — HOME</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root { --bg: #100803; --orange: #ff7417; --gold: #ffb347; --cream: #fff2df; }
+        body { 
+            margin: 0; background: var(--bg); color: var(--cream); 
+            font-family: 'Manrope', sans-serif; overflow: hidden;
+            display: flex; align-items: center; justify-content: center; height: 100vh;
+        }
+        .home-content { text-align: center; opacity: 0; transform: scale(0.8); }
+        h1 { font-family: 'Barlow Condensed'; font-size: 80px; text-transform: uppercase; color: var(--gold); margin: 0; }
+        p { letter-spacing: 5px; text-transform: uppercase; font-size: 14px; color: var(--muted); margin-bottom: 40px; }
+        .btn-enter {
+            padding: 15px 40px; border: 1px solid var(--orange);
+            background: transparent; color: white; font-weight: 800;
+            cursor: pointer; transition: .3s; text-transform: uppercase;
+            text-decoration: none; display: inline-block;
+        }
+        .btn-enter:hover { background: var(--orange); color: #000; box-shadow: 0 0 20px var(--orange); }
+    </style>
+</head>
+<body>
+    <div class="home-content" id="homeMain">
+        <!-- JUDUL: HOME TITLE -->
+        <h1>WELCOME TO THE CORE</h1>
+        <!-- JUDUL: HOME SUBTITLE -->
+        <p>Operational Intelligence Unit — Branch Pati</p>
+        <a href="dashboard.html" class="btn-enter">Enter Command Center ↗</a>
+    </div>
+
+    <script>
+        // Animasi Fade-In Mewah
+        gsap.to("#homeMain", { opacity: 1, scale: 1, duration: 1.5, ease: "power4.out", delay: 0.5 });
+    </script>
+</body>
+</html>

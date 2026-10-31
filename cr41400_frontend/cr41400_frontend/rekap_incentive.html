@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>REKAP INSENTIF — CR 41400</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Load Chart.js untuk Grafik Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #050505; color: #ffffff; min-height: 100vh; overflow-x: hidden; position: relative; }
+        .ambient-glow-left { position: absolute; top: 0; left: 0; width: 400px; height: 400px; background: radial-gradient(circle, rgba(220, 20, 60, 0.25) 0%, rgba(5, 5, 5, 0) 70%); z-index: 1; pointer-events: none; }
+        .ambient-glow-right { position: absolute; bottom: 0; right: 0; width: 500px; height: 500px; background: radial-gradient(circle, rgba(220, 20, 60, 0.2) 0%, rgba(5, 5, 5, 0) 70%); z-index: 1; pointer-events: none; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 25px 60px; position: relative; z-index: 10; }
+        .nav-links { display: flex; gap: 40px; list-style: none; font-size: 0.95rem; font-weight: 600; letter-spacing: 1.5px; }
+        .nav-links a { text-decoration: none; color: #888; transition: color 0.3s ease; }
+        .nav-links a.active, .nav-links a:hover { color: #ff1e38; }
+        .main-container { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 90px); padding: 0 60px; position: relative; z-index: 5; align-items: center; }
+        
+        @keyframes floatPhoto {
+            0%, 100% { transform: translateY(0px) perspective(1000px) rotateY(2deg); }
+            50% { transform: translateY(-10px) perspective(1000px) rotateY(2deg); }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px rgba(255, 30, 56, 0.15); }
+            50% { box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 30px rgba(255, 30, 56, 0.4); }
+        }
+
+        @keyframes shimmerLine {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .hero-image-wrapper { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+        .hero-image { 
+            width: 100%; 
+            max-height: 85vh; 
+            object-fit: cover; 
+            object-position: top center; 
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%); 
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%); 
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)); 
+            animation: floatPhoto 6s ease-in-out infinite; 
+            transition: transform 0.3s ease;
+        }
+        .hero-image:hover { transform: scale(1.02) perspective(1000px) rotateY(0deg); }
+
+        .hero-content { display: flex; flex-direction: column; justify-content: center; padding-left: 40px; }
+        .hello-badge { font-size: 3.5rem; font-weight: 800; letter-spacing: -1px; line-height: 1.1; margin-bottom: 5px; }
+        .hello-underline { width: 180px; height: 4px; background: linear-gradient(90deg, #ff1e38, transparent); margin-bottom: 25px; border-radius: 2px; }
+        
+        .user-title { font-size: 0.9rem; color: #aaa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+        .user-name { font-size: 2.8rem; font-weight: 800; color: #ff1e38; line-height: 1.15; margin-bottom: 15px; text-shadow: 0 0 30px rgba(255, 30, 56, 0.3); }
+        
+        .current-cycle-badge { display: inline-block; background: rgba(255, 30, 56, 0.1); border: 1px solid rgba(255, 30, 56, 0.3); color: #ff4d61; padding: 8px 16px; border-radius: 30px; font-size: 0.95rem; font-weight: 600; margin-bottom: 30px; width: fit-content; }
+        
+        .incentive-card { 
+            background: rgba(20, 20, 20, 0.7); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(12px); 
+            border-radius: 16px; 
+            padding: 25px; 
+            max-width: 450px; 
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        .filter-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .filter-group label { font-size: 0.85rem; color: #aaa; font-weight: 600; }
+        select { background: #121212; color: #fff; border: 1px solid #333; padding: 8px 14px; border-radius: 8px; font-size: 0.9rem; outline: none; cursor: pointer; transition: border-color 0.3s; }
+        select:focus { border-color: #ff1e38; }
+        
+        .incentive-data-box { background: #0c0c0c; border-radius: 10px; padding: 15px 20px; border-left: 4px solid #ff1e38; position: relative; overflow: hidden; }
+        .incentive-data-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 30, 56, 0.08), transparent);
+            animation: shimmerLine 4s infinite;
+        }
+        .incentive-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .incentive-value { font-size: 1.8rem; font-weight: 700; color: #fff; }
+        
+        .footer-swipe { position: absolute; bottom: 30px; right: 60px; display: flex; align-items: center; gap: 10px; color: #aaa; font-size: 0.85rem; letter-spacing: 1px; z-index: 10; }
+        .footer-swipe span { color: #ff1e38; font-size: 1.2rem; }
+
+        /* --- STYLING DASHBOARD SECTION DI BAWAH --- */
+        .dashboard-section {
+            padding: 60px 60px 90px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            background: linear-gradient(180deg, #050505, #0a0203);
+            position: relative;
+            z-index: 5;
+        }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 30px; flex-wrap: wrap; gap: 20px; }
+        .dash-title-wrapper span { font-size: 0.8rem; color: #ff1e38; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 700; }
+        .dash-title-wrapper h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 2.4rem; text-transform: uppercase; margin-top: 5px; color: #fff; letter-spacing: 1px; }
+        
+        .year-filter-box { display: flex; align-items: center; gap: 12px; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 12px; }
+        .year-filter-box label { font-size: 0.85rem; color: #aaa; font-weight: 600; }
+
+        .dash-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 25px; max-width: 1200px; margin: 0 auto; }
+        @media(max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+
+        .dash-card {
+            background: rgba(20, 20, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 25px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .dash-card h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; color: #aaa; margin-bottom: 15px; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px; }
+        
+        .summary-stats { display: flex; flex-direction: column; gap: 15px; }
+        .stat-item { background: #0c0c0c; padding: 15px; border-radius: 10px; border-left: 3px solid #ff1e38; }
+        .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .stat-val { font-size: 1.4rem; font-weight: 700; color: #fff; }
+
+        .chart-container { position: relative; height: 280px; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow-left"></div>
+    <div class="ambient-glow-right"></div>
+
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">HOME</a></li>
+            <li><a href="dashboard.html">DASHBOARD</a></li>
+            <li><a href="#" class="active">INCENTIVE</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="hero-image-wrapper">
+            <img id="userPhoto" src="" alt="User Photo" class="hero-image" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;200&quot; height=&quot;200&quot; fill=&quot;%23333&quot;><rect width=&quot;100%&quot; height=&quot;100%&quot;/><text x=&quot;50%&quot; y=&quot;50%&quot; fill=&quot;%23%23%23aaa&quot; font-family=&quot;sans-serif&quot; font-size=&quot;14&quot; dominant-baseline=&quot;middle&quot; text-anchor=&quot;middle&quot;>No Photo</text></svg>';">
+        </div>
+
+        <div class="hero-content">
+            <h1 class="hello-badge">HELL<span style="color:#ff1e38">O</span>!</h1>
+            <div class="hello-underline"></div>
+            
+            <p class="user-title" id="userNPK">NPK: -</p>
+            <h2 class="user-name" id="userName">Memuat Data...</h2>
+            
+            <div class="current-cycle-badge" id="currentCycle">
+                Handling Cycle: -
+            </div>
+
+            <div class="incentive-card">
+                <div class="filter-group">
+                    <label for="period-select">PERIODE :</label>
+                    <select id="period-select" class="custom-select"></select>
+                </div>
+
+                <div class="incentive-data-box">
+                    <div class="incentive-label">Final Inc Coll </div>
+                    <div class="incentive-value" id="finalIncValue">Rp 0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SECTION DI BAWAH -->
+    <section class="dashboard-section">
+        <div class="dash-header">
+            <div class="dash-title-wrapper">
+                <span>Analisis Performa Tahunan</span>
+                <h2>Dashboard Insentif & Grafik Tren</h2>
+            </div>
+            <div class="year-filter-box">
+                <label for="year-select">PILIH TAHUN:</label>
+                <select id="year-select" class="custom-select"></select>
+            </div>
+        </div>
+
+        <div class="dash-grid">
+            <!-- Kotak Ringkasan Statistik Tahun Terpilih -->
+            <div class="dash-card">
+                <h3>Ringkasan <span id="selectedYearLabel" style="color: #ff1e38;">-</span></h3>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Akumulasi Insentif</div>
+                        <div class="stat-val" id="yearTotalInc">Rp 0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Rata-rata Insentif / Periode</div>
+                        <div class="stat-val" id="yearAvgInc">Rp 0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Jumlah Periode Tercatat</div>
+                        <div class="stat-val" id="yearPeriodCount">0 Periode</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kotak Grafik Tren Insentif -->
+            <div class="dash-card">
+                <h3>Grafik Tren Insentif Koleksi</h3>
+                <div class="chart-container">
+                    <canvas id="incentiveChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-swipe">
+        Swipe to Next <span>&rarr;</span>
+    </div>
+
+<script>
+        let allUserData = [];
+        let incentiveChartInstance = null;
+        const periodSelect = document.getElementById('period-select');
+        const yearSelect = document.getElementById('year-select');
+
+        async function loadIncentiveData() {
+            const activeNPK = localStorage.getItem('userNPK');
+
+            if (!activeNPK || activeNPK === "null" || activeNPK === "") {
+                alert("Sesi NPK tidak ditemukan. Silakan login ulang.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/incentive/${activeNPK.trim()}`);
+                const result = await response.json();
+
+                if (result.success && result.allData.length > 0) {
+                    allUserData = result.allData;
+                    setupSelectors();
+                    updateIncentiveUI();
+                    updateDashboardUI();
+                } else {
+                    document.getElementById('userName').textContent = "DATA TIDAK DITEMUKAN";
+                    document.getElementById('userNPK').textContent = `NPK: ${activeNPK}`;
+                }
+            } catch (err) {
+                console.error("Gagal fetch data:", err);
+                document.getElementById('userName').textContent = "ERROR KONEKSI SERVER";
+            }
+        }
+
+        function setupSelectors() {
+            // Setup Periode Atas
+            const periods = [...new Set(allUserData.map(item => item.PERIODE))];
+            periodSelect.innerHTML = periods.map(p => `<option value="${p}">${p}</option>`).join('');
+
+            // Ekstrak Tahun dari format periode (biasanya mengandung format MM/YYYY atau teks tahun, misal CL/09/2026 atau 2026)
+            // Kita coba ambil 4 digit angka terakhir atau parse dari string PERIODE
+            const years = [...new Set(allUserData.map(item => {
+                const match = item.PERIODE.match(/\d{4}/);
+                return match ? match[0] : '2026';
+            }))].sort();
+
+            yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+        }
+
+        periodSelect.addEventListener('change', updateIncentiveUI);
+        yearSelect.addEventListener('change', updateDashboardUI);
+
+        function updateIncentiveUI() {
+            const selectedPeriod = periodSelect.value;
+            const data = allUserData.find(item => item.PERIODE === selectedPeriod) || allUserData[0];
+
+            if (!data) return;
+
+            const name = data.NAMA || 'No Name';
+            const npk = data.NPK || '-';
+            const handling = data.HANDLING_CYCLE || 'C0';
+            const finalInc = data.FINAL_INC_COLL || 0;
+
+            document.getElementById('userName').textContent = name;
+            document.getElementById('userNPK').textContent = `NPK: ${npk}`;
+            document.getElementById('currentCycle').textContent = `Handling Cycle: ${handling}`;
+            document.getElementById('finalIncValue').textContent = `Rp ${Number(finalInc).toLocaleString('id-ID')}`;
+
+            const imgEl = document.getElementById('userPhoto');
+            imgEl.src = `http://localhost:3000/profiles/${name.trim()}.jpg`;
+        }
+
+        function updateDashboardUI() {
+            const selectedYear = yearSelect.value;
+            document.getElementById('selectedYearLabel').textContent = selectedYear;
+
+            // Filter data berdasarkan tahun yang dipilih
+            const yearData = allUserData.filter(item => item.PERIODE.includes(selectedYear));
+
+            const totalInc = yearData.reduce((sum, item) => sum + Number(item.FINAL_INC_COLL || 0), 0);
+            const avgInc = yearData.length > 0 ? totalInc / yearData.length : 0;
+
+            document.getElementById('yearTotalInc').textContent = `Rp ${Number(totalInc).toLocaleString('id-ID')}`;
+            document.getElementById('yearAvgInc').textContent = `Rp ${Number(Math.round(avgInc)).toLocaleString('id-ID')}`;
+            document.getElementById('yearPeriodCount').textContent = `${yearData.length} Periode`;
+
+            // Render Grafik menggunakan Chart.js
+            renderChart(yearData);
+        }
+
+        function renderChart(yearData) {
+            const ctx = document.getElementById('incentiveChart').getContext('2d');
+
+            const labels = yearData.map(item => item.PERIODE);
+            const values = yearData.map(item => Number(item.FINAL_INC_COLL || 0));
+
+            if (incentiveChartInstance) {
+                incentiveChartInstance.destroy();
+            }
+
+            incentiveChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Final Inc Coll (Rp)',
+                        data: values,
+                        borderColor: '#ff1e38',
+                        backgroundColor: 'rgba(255, 30, 56, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#ff1e38',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#aaa', font: { family: 'Plus Jakarta Sans', size: 11 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { 
+                                color: '#aaa', 
+                                font: { family: 'Plus Jakarta Sans', size: 11 },
+                                callback: function(value) {
+                                    if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(1) + ' Jt';
+                                    }
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        window.onload = loadIncentiveData;
+</script>
+</body>
+</html>

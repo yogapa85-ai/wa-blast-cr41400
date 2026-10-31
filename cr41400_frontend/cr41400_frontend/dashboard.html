@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Performance Intelligence — CR 41400</title>
+<style>
+/* ============================================================ 
+   SECTION: STYLE & THEME (Industrial Dark Gold)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Manrope:wght@400;600;800&display=swap');
+
+:root {
+    --bg: #100803;
+    --panel: rgba(27, 13, 5, 0.6);
+    --orange: #ff7417;
+    --gold: #ffb347;
+    --cream: #fff2df;
+    --muted: #c5b4a4;
+    --line: rgba(255, 133, 35, 0.2);
+    --glass: rgba(255, 255, 255, 0.03);
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Manrope', sans-serif;
+    background-image: radial-gradient(circle at 50% -20%, #4a1a0a 0%, transparent 50%);
+    min-height: 100vh;
+}
+
+.nav {
+    height: 78px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(22px, 6vw, 88px);
+    border-bottom: 1px solid var(--line);
+    background: rgba(16, 8, 3, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 13px; text-decoration: none; color: inherit; }
+.brand-mark { width: 38px; height: 38px; border: 1px solid var(--orange); border-radius: 50%; display: grid; place-items: center; color: var(--gold); font-size: 18px; }
+.nav-links { display: flex; gap: 28px; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; }
+.nav-links a { color: #d6c4b3; text-decoration: none; transition: .3s; }
+.nav-links a:hover { color: var(--gold); }
+.btn-incentive {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(45deg, #ff7417, #ffb347);
+    color: #000 !important;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    border-radius: 12px;
+    transition: .3s;
+    box-shadow: 0 5px 15px rgba(255, 116, 23, 0.3);
+}
+.btn-incentive:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--orange);
+    background: linear-gradient(45deg, #ffb347, #ff7417);
+}
+
+
+/* ============================================================ 
+   SECTION: IMMERSIVE BACKGROUND DESIGN
+   ============================================================ */
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Manrope', sans-serif;
+    /* Background Dasar: Gradasi Gelap dengan sentuhan merah marun di tengah */
+    background: radial-gradient(circle at center, #2a0f05 0%, #100803 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Efek Grid Teknologi di seluruh layar */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(255, 116, 23, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 116, 23, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Efek Cahaya Glow di pojok-pojok layar agar tidak sepi */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 10% 10%, rgba(255, 116, 23, 0.07) 0%, transparent 30%),
+        radial-gradient(circle at 90% 90%, rgba(255, 116, 23, 0.07) 0%, transparent 30%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.dashboard-container {
+    padding: 120px clamp(22px, 8vw, 88px) 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Menambahkan Gambar Latar Samars (Opsional: Ganti 'bg-dashboard.jpg' dengan gambarmu) */
+.bg-image-overlay {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-image: url('bagian atas.png'); 
+    background-size: 60% auto; 
+    background-repeat: no-repeat; 
+    background-position: center; 
+    
+    /* ============================================================ */
+    /* KUNCI UNTUK TARIK SAMPING & TURUNKAN GAMBAR                  */
+    /* scaleX(1.2) = Tarik lebar | translateY(50px) = Turunkan ke bawah */
+    transform: scaleX(1.8) translateY(60px); 
+    transform-origin: center; 
+    /* ============================================================ */
+
+    opacity: 0.1; 
+    filter: grayscale(100%) contrast(120%);
+    z-index: -2;
+    pointer-events: none;
+}
+
+
+
+
+/* MEMPERKANTIK KARTU: Efek Glassmorphism agar lebih stand-out */
+.profile-card, .metric-card, .info-panel, .chart-panel {
+    background: rgba(27, 13, 5, 0.7) !important; 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 133, 35, 0.25) !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+}
+
+.metric-card:hover {
+    border-color: var(--orange) !important;
+    box-shadow: 0 0 20px rgba(255, 116, 23, 0.2);
+    transform: translateY(-5px);
+}
+
+.search-section { text-align: center; margin-bottom: 50px; }
+.search-section h2 { font-family: 'Barlow Condensed'; font-size: 42px; text-transform: uppercase; margin-bottom: 20px; color: var(--cream); }
+.search-box { position: relative; display: inline-block; width: 100%; max-width: 500px; }
+.search-box input {
+    width: 100%; background: var(--glass); border: 1px solid var(--line);
+    padding: 15px 25px; border-radius: 50px; color: white; font-size: 16px;
+    outline: none; transition: .3s; text-align: center;
+}
+.search-box input:focus { border-color: var(--orange); box-shadow: 0 0 20px rgba(255, 116, 23, 0.3); }
+
+.db-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 25px; align-items: start; }
+
+.profile-card {
+    background: var(--panel);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--line);
+    border-radius: 30px;
+    padding: 40px;
+    text-align: center;
+}
+.profile-img-container {
+    width: 180px; height: 180px; margin: 0 auto 20px;
+    border-radius: 50%; overflow: hidden;
+    border: 4px solid var(--orange); box-shadow: 0 0 30px rgba(255, 116, 23, 0.4);
+}
+.profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-family: 'Barlow Condensed'; font-size: 24px; text-transform: uppercase; color: var(--gold); margin-bottom: 15px; }
+
+.selector-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.custom-select {
+    background: rgba(0,0,0,0.5); border: 1px solid var(--line);
+    color: white; padding: 8px; border-radius: 8px; font-size: 12px;
+    cursor: pointer; outline: none;
+}
+
+.metrics-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.metric-card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 24px; padding: 25px; transition: .3s;
+}
+.metric-card:hover { transform: translateY(-5px); border-color: var(--orange); }
+.metric-label { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; display: block; }
+.metric-value { font-size: 32px; font-weight: 800; color: var(--cream); display: block; }
+.metric-sub { font-size: 10px; color: var(--orange); margin-top: 5px; }
+
+.info-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 20px; }
+.info-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+.info-item span:first-child { color: var(--muted); }
+
+.chart-panel {
+    grid-column: span 3; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 30px; padding: 30px; margin-top: 20px;
+}
+.chart-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.chart-header h3 { font-family: 'Barlow Condensed'; text-transform: uppercase; color: var(--gold); }
+
+</style>
+</head>
+<body>
+    <div class="bg-image-overlay"></div> <!-- TAMBAHKAN BARIS INI -->
+    ...
+
+
+<header class="nav">
+    <a class="brand" href="index.html"><span class="brand-mark">♜</span><span>KARESIDENAN<br><span style="color:var(--orange)">PATI / CR 41400</span></span></a>
+    <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#identitas">Identitas</a>
+        <a href="index.html#keunggulan">Keunggulan</a>
+        <a href="index.html#misi">Misi</a>
+        <a href="index.html#team">Team 41400</a>
+    </nav>
+    <a class="nav-cta" href="index.html#team" style="border:1px solid var(--orange); padding:11px 17px; font-size:10px; text-transform:uppercase; color:white; text-decoration:none; background:#ff741711;">KEMBALI KE WILAYAH ↗</a>
+</header>
+
+<main class="dashboard-container">
+    <div class="search-section">
+        <h2 id="main-title">Optimize Your Metrics</h2>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Ketik nama personil & tekan Enter..." autocomplete="off">
+        </div>
+    </div>
+
+    <div class="db-grid">
+        <div class="profile-card">
+            <div class="profile-img-container">
+                <img id="user-photo" src="https://via.placeholder.com/200" alt="Profile">
+            </div>
+            <div class="profile-name" id="user-name">NO DATA</div>
+            <div class="selector-group">
+                <span style="font-size: 10px; color: var(--muted);">SELECT PERIOD</span>
+                <select id="period-select" class="custom-select"></select>
+            </div>
+        </div>
+
+        <div class="metrics-container">
+            <div class="metric-card">
+                <span class="metric-label">BAHAN</span>
+                <span class="metric-value" id="val-bahan">0</span>
+                <span class="metric-sub">Total Base Data</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">IN %</span>
+                <span class="metric-value" id="val-in">0%</span>
+                <span class="metric-sub">Collection Rate</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">ROLLING</span>
+                <span class="metric-value" id="val-rolling">0</span>
+                <span class="metric-sub">Total Rolling in Amount</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">CURRENT CYCLE</span>
+                <span class="metric-value" id="val-cycle">0</span>
+                <span class="metric-sub">Operational Cycle</span>
+            </div>
+        </div>
+
+    <div class="info-panel">
+    <div class="info-item"><span>SPV Name</span> <span id="info-spv">-</span></div>
+    <div class="info-item"><span>POS Name</span> <span id="info-pos">-</span></div>
+    <div class="info-item"><span>COLL ID</span> <span id="info-id">-</span></div>
+    <div class="info-item"><span>STATUS</span> <span style="color:lime">Active</span></div>
+    
+    <!-- TOMBOL INCENTIVE BARU -->
+    <a href="login.html" class="btn-incentive">VIEW INCENTIVE 🔑</a>
+</div>
+
+
+        <div class="chart-panel">
+            <div class="chart-header">
+                <h3>Performance Trend Analysis</h3>
+                <select id="year-select" class="custom-select" style="width: 100px;"></select>
+            </div>
+            <canvas id="performanceChart" height="100"></canvas>
+        </div>
+    </div>
+</main>
+
+<!-- Load Chart.js & Plugin DataLabels -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+/* ============================================================ 
+   SECTION: DASHBOARD LOGIC (Ultra-Robust Version 5.0)
+   ============================================================ */
+
+Chart.register(ChartDataLabels);
+
+let allUserData = []; 
+let currentYear = "";
+
+const searchInput = document.getElementById('search-input');
+const periodSelect = document.getElementById('period-select');
+const yearSelect = document.getElementById('year-select');
+
+const ctx = document.getElementById('performanceChart').getContext('2d');
+let perfChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [{
+        label: 'IN %',
+        data: [],
+        borderColor: '#ff7417',
+        backgroundColor: 'rgba(255, 116, 23, 0.1)',
+        fill: true, tension: 0.4, borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#ffb347'
+    }]},
+    options: {
+        responsive: true,
+        plugins: { 
+            legend: { display: false },
+            tooltip: { callbacks: { label: (ctx) => `IN%: ${ctx.parsed.y}%` } },
+            datalabels: {
+                align: 'top', anchor: 'end', color: '#ffb347',
+                font: { weight: 'bold', size: 12 },
+                formatter: (value) => value.toFixed(2) + '%'
+            }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#c5b4a4', callback: (val) => val + '%' } },
+            x: { grid: { display: false }, ticks: { color: '#c5b4a4' } }
+        }
+    }
+});
+
+searchInput.addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+        const name = searchInput.value;
+        if (!name) return;
+        try {
+            const response = await fetch(`http://localhost:3000/api/performance/${name}`);
+            const result = await response.json();
+            if (result.success) {
+                allUserData = result.allData;
+                console.log("Data diterima dari server:", allUserData); // DEBUG: Lihat di F12 Console
+                setupSelectors();
+                updateDashboard();
+            } else {
+                alert(result.message);
+            }
+        } catch (err) {
+            alert("Koneksi server gagal.");
+        }
+    }
+});
+
+function setupSelectors() {
+    const years = [...new Set(allUserData.map(item => {
+        const periode = Object.values(item).find(val => typeof val === 'string' && val.includes('/'));
+        if (!periode) return 'Unknown';
+        const parts = periode.split('/');
+        return parts.length > 2 ? parts[2] : 'Unknown';
+    }))].sort();
+    
+    yearSelect.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+    currentYear = years[0];
+
+    const periods = [...new Set(allUserData.map(item => {
+        return Object.values(item).find(val => typeof val === 'string' && val.includes('/')) || 'No Period';
+    }))];
+    periodSelect.innerHTML = periods.map(p => `<option value="${p}">${p}</option>`).join('');
+}
+
+periodSelect.addEventListener('change', updateDashboard);
+yearSelect.addEventListener('change', (e) => {
+    currentYear = e.target.value;
+    updateChart();
+});
+
+// FUNGSI BARU: Mencari nilai kolom meskipun nama kolom ada spasi/huruf kecil
+function findValue(obj, targetKey) {
+    const keys = Object.keys(obj);
+    const foundKey = keys.find(k => k.trim().toUpperCase() === targetKey.toUpperCase());
+    return foundKey ? obj[foundKey] : null;
+}
+
+function updateDashboard() {
+    const selectedPeriod = periodSelect.value;
+    const data = allUserData.find(item => {
+        const periodeVal = Object.values(item).find(val => typeof val === 'string' && val.includes('/'));
+        return periodeVal === selectedPeriod;
+    });
+
+    if (!data) return;
+
+    // Ambil data menggunakan fungsi findValue agar anti-error spasi
+    const collName = findValue(data, 'COLL NAME') || 'No Name';
+    const bahan = findValue(data, 'BAHAN');
+    const inPercent = findValue(data, 'IN%');
+    const rolling = findValue(data, 'ROLLING');
+    const caScore = findValue(data, 'CA');
+    const spvName = findValue(data, 'SPV NAME');
+    const posName = findValue(data, 'POS NAME');
+    const collId = findValue(data, 'COLL ID');
+
+    document.getElementById('main-title').innerText = `PERFORMANCE: ${collName}`;
+    document.getElementById('user-name').innerText = collName;
+    document.getElementById('val-bahan').innerText = formatNumber(bahan);
+    document.getElementById('val-in').innerText = formatPercent(inPercent);
+    document.getElementById('val-rolling').innerText = formatNumber(rolling);
+    document.getElementById('val-cycle').innerText = caScore || 0;
+
+    document.getElementById('info-spv').innerText = spvName || '-';
+    document.getElementById('info-pos').innerText = posName || '-';
+    document.getElementById('info-id').innerText = collId || '-';
+
+    const photoName = collName.trim() + '.jpg';
+    document.getElementById('user-photo').src = `http://localhost:3000/profiles/${photoName}`;
+    document.getElementById('user-photo').onerror = function() { this.src = 'https://via.placeholder.com/200?text=No+Photo'; };
+
+    updateChart();
+}
+
+function updateChart() {
+    const filteredData = allUserData.filter(item => {
+        const periode = Object.values(item).find(val => typeof val === 'string' && val.includes('/'));
+        return periode && periode.includes(currentYear);
+    });
+
+    filteredData.sort((a, b) => {
+        const pA = Object.values(a).find(val => typeof val === 'string' && val.includes('/'));
+        const pB = Object.values(b).find(val => typeof val === 'string' && val.includes('/'));
+        return parseInt(pA.split('/')[1]) - parseInt(pB.split('/')[1]);
+    });
+
+    const labels = filteredData.map(item => {
+        const p = Object.values(item).find(val => typeof val === 'string' && val.includes('/'));
+        const parts = p.split('/');
+        return parts[1] + '/' + parts[2];
+    });
+
+    const values = filteredData.map(item => {
+        let val = findValue(item, 'IN%');
+        if (typeof val === 'string') val = val.replace('%', '').replace(',', '.');
+        let n = parseFloat(val) || 0;
+        
+        // LOGIKA PERBAIKAN: Kalikan 100 jika berupa desimal agar grafik naik
+        if (n < 1 && n > -1) {
+            n = n * 100;
+        }
+        return n;
+    });
+
+    perfChart.data.labels = labels;
+    perfChart.data.datasets[0].data = values;
+    perfChart.update();
+}
+
+function formatNumber(num) {
+    if (num === null || num === undefined || num === "") return "0";
+    
+    // Bersihkan jika input berupa string dengan titik ribuan (misal "2.180.000")
+    let cleanNum = num;
+    if (typeof num === 'string') {
+        cleanNum = num.replace(/\./g, '').replace(',', '.');
+    }
+    
+    const n = parseFloat(cleanNum);
+    if (isNaN(n)) return "0";
+
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + ' B';
+    if (n >= 1e6) return (n / 1e6).toFixed(2) + ' M';
+    if (n >= 1e3) return (n / 1e3).toFixed(2) + ' K';
+    return n.toFixed(0);
+}
+
+function formatPercent(val) {
+    if (val === null || val === undefined || val === "") return "0%";
+    let v = val;
+    if (typeof v === 'string') v = v.replace('%', '').replace(',', '.');
+    
+    let n = parseFloat(v);
+    if (isNaN(n)) return "0%";
+
+    // LOGIKA PERBAIKAN: 
+    // Jika angka kurang dari 1 (misal 0.0414), maka itu adalah desimal persen.
+    // Kita kalikan 100 agar menjadi 4.14
+    if (n < 1 && n > -1) {
+        n = n * 100;
+    }
+
+    return n.toFixed(2).replace('.', ',') + '%';
+}
+
+</script>
+
+</body>
+</html>

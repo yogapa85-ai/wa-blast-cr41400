@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <title>SISTEM KEAMANAN — CR 41400</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Manrope:wght@400;600;800&display=swap');
+
+        :root {
+            --glass-dark: rgba(15, 15, 15, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gold: #ff1e38;
+            --muted: #aaaaaa;
+            --line: rgba(255, 255, 255, 0.15);
+            --neon-orange: #ff4d61;
+        }
+
+        /* ============================================================ 
+            BACKGROUND LAYER (Paling Bawah)
+            ============================================================ */
+        .main-bg {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            
+            /* Menggunakan path server yang sudah terverifikasi muncul */
+            background-image: url('http://localhost:3000/layout/rhino_normal.jpg') !important; 
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            filter: brightness(0.5);
+            
+            z-index: -2 !important; 
+            display: block !important;
+        }
+
+        /* Overlay Gradasi untuk kedalaman visual */
+        .bg-overlay {
+            position: fixed; 
+            inset: 0;
+            background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ============================================================ 
+            LOGIN CARD (Lapisan Atas)
+            ============================================================ */
+        .login-container {
+            position: fixed; 
+            right: 8%; top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            pointer-events: auto;
+        }
+        .login-card {
+            width: 400px; padding: 50px;
+            background: var(--glass-dark);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+        .login-card h1 {
+            font-family: 'Barlow Condensed';
+            font-size: 36px; color: var(--gold);
+            margin: 0; letter-spacing: 10px; text-transform: uppercase;
+        }
+        .login-card p {
+            font-size: 14px; color: var(--muted); margin-bottom: 35px;
+        }
+
+        .input-group { position: relative; margin-bottom: 25px; text-align: left; }
+        .input-group label {
+            font-size: 10px; color: var(--gold); 
+            text-transform: uppercase; margin-bottom: 8px; display: block;
+            letter-spacing: 2px;
+        }
+        .input-group input {
+            width: 100%; padding: 15px; background: rgba(0,0,0,0.6);
+            border: 1px solid var(--line); border-radius: 12px;
+            color: white; outline: none; box-sizing: border-box;
+            transition: 0.3s; font-size: 14px;
+        }
+        .input-group input:focus {
+            border-color: var(--neon-orange);
+            box-shadow: 0 0 15px rgba(255, 75, 97, 0.3);
+        }
+
+        .btn-login {
+            width: 100%; padding: 15px; background: linear-gradient(45deg, #ff1e38, #ff6b81);
+            border: none; border-radius: 12px; color: #fff;
+            font-weight: 800; cursor: pointer; text-transform: uppercase;
+            transition: .3s; font-size: 16px; letter-spacing: 2px;
+        }
+        .btn-login:hover { transform: scale(1.02); opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <!-- Lapisan paling belakang: Gambar Rhino -->
+    <div class="main-bg"></div>
+    
+    <!-- Lapisan tengah: Gradasi Hitam -->
+    <div class="bg-overlay"></div>
+
+    <!-- Lapisan paling atas: Kotak Login -->
+    <div class="login-container">
+        <div class="login-card">
+            <h1>SPACE</h1>
+            <p>Welcome Back, Commander</p>
+
+            <div class="input-group">
+                <label>Email Address / User</label>
+                <input type="text" id="username" placeholder="Enter your user id...">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
+            <button class="btn-login" onclick="handleLogin()">Login</button>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    const btn = document.querySelector('.btn-login');
+
+    if (!user || !pass) {
+        alert("Harap isi User dan Password!");
+        return;
+    }
+
+    btn.innerText = "AUTHENTICATING...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user, password: pass })
+        });
+        const result = await response.json();
+       // Di dalam fungsi handleLogin() di login.html:
+// Contoh di login.html saat login berhasil:
+if (result.success) {
+    // Ambil nilai dari input username/NPK yang diketik user
+    const inputNPK = document.getElementById('username').value; // Sesuaikan dengan id input Anda
+    localStorage.setItem('userNPK', inputNPK); 
+    
+    window.location.href = 'rekap_incentive.html';
+}
+ else {
+                    alert(result.message);
+                }
+                 } catch (err) {
+        alert("Koneksi server gagal. Pastikan server.js sudah berjalan.");
+    } finally {
+        btn.innerText = "LOGIN";
+        btn.disabled = false;
+    }
+}
+    </script>
+</body>
+</html>

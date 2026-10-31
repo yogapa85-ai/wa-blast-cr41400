@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#100803" />
+<title>CR 41400 — Karesidenan Pati</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--bg:#100803;--panel:#1b0d05;--orange:#ff7417;--gold:#ffb347;--cream:#fff2df;--muted:#c5b4a4;--line:rgba(255,133,35,.28)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--cream);font-family:Manrope,Arial,sans-serif;overflow-x:hidden}a{color:inherit;text-decoration:none}button{font:inherit}
+
+#meteor-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;opacity:.9; display: none;}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:4;opacity:.055;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
+
+.nav{height:78px;position:fixed;z-index:10;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(22px,6vw,88px);border-bottom:1px solid rgba(255,160,65,.12);background:linear-gradient(180deg,rgba(10,5,2,.78),transparent)}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.12em;font-size:13px}.brand-mark{width:38px;height:38px;border:1px solid var(--orange);border-radius:50%;display:grid;place-items:center;color:var(--gold);box-shadow:0 0 25px #ff74172b;font-size:18px}.nav-links{display:flex;gap:28px;color:#d6c4b3;font-size:11px;text-transform:uppercase;letter-spacing:.15em}.nav-links a:hover{color:var(--gold)}.nav-cta{border:1px solid var(--orange);padding:11px 17px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:#ff741711}
+/* Tambahkan ini agar tombol berjejer rapi dan jaraknya bisa diatur */
+.nav-buttons {
+    display: flex;       /* Membuat tombol berbaris ke samping */
+    gap: 12px;           /* Jarak antara tombol Masuk Wilayah & Performance */
+    align-items: center; /* Menjaga tombol tetap sejajar secara vertikal */
+}
+
+.hero {
+    min-height: 92svh;
+    position: relative;
+    display: flex;
+    align-items: flex-start; 
+    justify-content: space-between;
+    isolation: isolate;
+    overflow: hidden;
+    padding: 130px clamp(22px,8vw,120px) 50px; 
+    background: radial-gradient(circle at 70% 50%, #4a1a0a 0%, transparent 60%), linear-gradient(110deg,#100803 8%,#1c0c04 60%,#100803);
+}
+
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#100803 0%,rgba(16,8,3,.92) 38%,rgba(16,8,3,.3) 75%,#100803 100%);z-index:-1}
+.hero-grid{position:absolute;inset:0;z-index:-2;background-image:linear-gradient(rgba(255,132,30,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,132,30,.045) 1px,transparent 1px);background-size:52px 52px;mask-image:linear-gradient(90deg,transparent,black,transparent)}
+
+.hero-copy{position:relative;z-index:2;width:min(620px,50%);animation:rise .9s ease-out both}
+.eyebrow{display:flex;align-items:center;gap:12px;color:var(--gold);font-size:10px;letter-spacing:.28em;text-transform:uppercase}
+.eyebrow:before{content:"";height:1px;width:36px;background:var(--orange);box-shadow:0 0 12px var(--orange)}
+h1{font-family:'Barlow Condensed',Impact,sans-serif;text-transform:uppercase;font-size:clamp(76px,12vw,166px);line-height:.78;letter-spacing:-.035em;margin:25px 0 22px;font-weight:900;text-shadow:0 7px 40px #ff74172a}
+h1 span{display:block;color:var(--orange);background:linear-gradient(180deg,#ffd18a 0%,#ff8b20 40%,#d74706 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-copy p{max-width:460px;color:#d0bdae;line-height:1.8;font-size:14px}
+.hero-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:29px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;padding:15px 21px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;transition:.25s;cursor:pointer}
+.btn-primary{background:linear-gradient(100deg,#b83e08,#ff8a20);color:#1a0a03;border:1px solid #ffad4d;box-shadow:0 8px 32px #ff74172b}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 38px #ff741755}
+.btn-ghost{border:1px solid #8b4a24;color:#ffe0bd;background:#160a04b8}
+.btn-ghost:hover{border-color:var(--gold)}
+
+.hero-visual {
+    position: relative;
+    width: min(50vw, 600px);
+    height: 60vh; 
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rhino-img {
+    width: 150%;
+    height: 150%;
+    background-image: url('layout awal.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.9));
+    animation: subtleBreathing 10s ease-in-out infinite;
+    z-index: 2;
+    -webkit-mask-image: radial-gradient(circle, black 40%, transparent 80%);
+    mask-image: radial-gradient(circle, black 40%, transparent 80%);
+}
+
+.rhino-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 150%, var(--bg) 50%);
+    z-index: 3;
+    pointer-events: none;
+}
+
+@keyframes subtleBreathing {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+}
+
+.hero-stamp{position:absolute;right:8%;bottom:14%;z-index:2;border:1px solid #ff8b2559;background:#160a04bb;backdrop-filter:blur(10px);padding:14px 18px;transform:rotate(-5deg);box-shadow:0 0 30px #ff74171b}.hero-stamp strong{font-family:'Barlow Condensed';font-size:24px;letter-spacing:.1em;color:var(--gold);display:block}.hero-stamp small{font-size:8px;letter-spacing:.18em;color:#c7a990}
+.scroll-hint {
+    position: absolute;
+    left: clamp(22px,6vw,88px);
+    bottom: 120px; 
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 9px;
+    letter-spacing: .2em;
+    color: #b99b82;
+    text-transform: uppercase;
+}
+
+.ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;background:#160a04;padding:17px 0}.ticker-track{display:flex;width:max-content;animation:marquee 28s linear infinite;gap:38px;color:#cda17b;font-size:10px;letter-spacing:.22em;text-transform:uppercase}.ticker b{color:var(--orange)}
+.section{position:relative;padding:105px clamp(22px,8vw,120px);overflow:hidden}.section:before{content:"";position:absolute;width:560px;height:560px;right:-200px;top:-230px;border-radius:50%;background:#ff72100b;filter:blur(10px);pointer-events:none}.section-head{max-width:700px;margin:0 auto 48px;text-align:center;position:relative}.section-head .eyebrow{justify-content:center}.section h2{font-family:'Barlow Condensed',Impact,sans-serif;text-transform:uppercase;font-size:clamp(42px,6vw,76px);line-height:.95;margin:17px 0;color:#fff4e8}.section h2 span{color:var(--orange)}.section-head p{font-size:13px;line-height:1.8;color:var(--muted)}.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative}.feature{min-height:220px;padding:25px 22px;background:linear-gradient(145deg,#241106dd,#120803f2);border:1px solid #8b421f66;position:relative;overflow:hidden;transition:transform .3s,border-color .3s;transform-style:preserve-3d}.feature:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 35%,#ff8b2410 50%,transparent 65%);transform:translateX(-100%);transition:transform .7s}.feature:hover{transform:translateY(-8px);border-color:#ff8b25;box-shadow:0 20px 55px #0006}.feature:hover:before{transform:translateX(100%)}.feature .num{font-size:10px;color:var(--orange);letter-spacing:.2em}.feature .icon{font-size:27px;margin:25px 0 14px;color:var(--gold);filter:drop-shadow(0 0 12px #ff741755)}.feature h3{font-family:'Barlow Condensed';font-size:23px;text-transform:uppercase;margin:0 0 9px}.feature p{font-size:11px;line-height:1.7;color:#bba998;margin:0}
+.mission{display:grid;grid-template-columns:.9fr 1.1fr;align-items:center;gap:clamp(30px,7vw,100px);background:radial-gradient(ellipse at 22% 50%,#78300b45,transparent 42%),#130903}.mission-visual{position:relative;min-height:460px;border:1px solid #a64b1d6b;background:linear-gradient(135deg,#ff75151c,#0d0602 60%);overflow:hidden;display:grid;place-items:center}.mission-visual:before,.mission-visual:after{content:"";position:absolute;border:1px solid #ff8b2533;border-radius:50%;width:350px;height:350px;box-shadow:0 0 0 40px #ff8b2508,0 0 0 80px #ff8b2505}.mission-visual:after{width:230px;height:230px}.mission-visual img{position:relative;z-index:1;width:100%;height:100%;max-height:520px;object-fit:cover;object-position:center 35%;mix-blend-mode:screen;opacity:.88;mask-image:linear-gradient(0deg,transparent,#000 18%,#000 80%,transparent)}.mission-copy h2{font-size:clamp(50px,7vw,88px);margin:18px 0}.mission-copy p{color:var(--muted);line-height:1.9;font-size:13px;max-width:520px}.mission-list{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px}.mission-list div{border-left:2px solid var(--orange);padding:8px 0 8px 13px;font-size:11px;color:#ead3bf}.mission-list strong{display:block;color:var(--gold);font-size:10px;letter-spacing:.1em;margin-bottom:4px}
+.team{padding-top:90px;padding-bottom:105px;text-align:center;background:linear-gradient(180deg,#100803,#1b0b03 50%,#100803)}.team-number{font-family:'Barlow Condensed';font-size:clamp(90px,18vw,220px);line-height:.8;letter-spacing:-.04em;font-weight:900;color:transparent;-webkit-text-stroke:1px #ff8a31;background:linear-gradient(180deg,#ffe0a2,#ff7417 70%,#a83204);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 30px #ff741722);margin:25px 0}.team-sub{letter-spacing:.4em;font-size:11px;color:#d7b89c;text-transform:uppercase}.team p{max-width:530px;margin:25px auto;color:var(--muted);font-size:13px;line-height:1.8}.footer{border-top:1px solid var(--line);padding:26px clamp(22px,6vw,88px);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:#8f7662;font-size:10px;letter-spacing:.08em}.footer strong{color:#e2b18a}
+
+/* --- REVISED COMMAND CENTER UI --- */
+.command-center {
+    padding: 80px clamp(22px, 8vw, 120px) 60px;
+    position: relative;
+    
+    /* Lapis 1: Gradasi Gelap | Lapis 2: Foto */
+    background-image: 
+        linear-gradient(rgba(16, 8, 3, 0.8), rgba(16, 8, 3, 0.8)), 
+        url('bagian atas.png');
+
+    /* Lapis 1: Cover (penuh) | Lapis 2: Atur ukuran foto di sini (misal 50%) */
+    background-size: cover, 50% auto; 
+    
+    background-repeat: no-repeat; 
+
+    /* ============================================================ */
+    /* SETTING POSISI % (ATUR DI SINI)                              */
+    /* Format: [Posisi Gradasi], [Kiri-Kanan %] [Atas-Bawah %]       */
+    /*                                                              */
+    background-position: 0% 0%, 100% 100%; 
+    /* ============================================================ */
+    
+    border-top: 1px solid var(--line);
+}
+
+
+
+
+.cc-top-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 30px;
+    margin-bottom: 30px;
+    align-items: start;
+}
+
+.auth-box {
+    background: linear-gradient(145deg, #1b0d05, #0a0502);
+    border: 1px solid var(--line); 
+    padding: 30px; 
+    border-radius: 24px;
+    display: flex; 
+    align-items: center; 
+    gap: 30px;
+    backdrop-filter: blur(15px); 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+#qr-image {
+    width: 200px; 
+    height: 200px; 
+    background: white;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+}
+
+.auth-info { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.auth-info p { margin: 0; font-size: 11px; text-transform: uppercase; color: var(--gold); letter-spacing: .15em; font-weight: 600; }
+
+#conn-status { 
+    font-weight: 800; 
+    font-size: 18px; 
+    color: red; 
+    display: inline-block;
+    transition: .3s;
+}
+
+/* Pulse effect for Connected status */
+.status-connected {
+    color: lime !important;
+    animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green {
+    0% { text-shadow: 0 0 0px lime; }
+    50% { text-shadow: 0 0 15px lime; }
+    100% { text-shadow: 0 0 0px lime; }
+}
+
+.auth-controls {
+    margin-top: 15px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px;
+    width: 100%;
+    max-width: 280px;
+}
+
+.input-field {
+    background: rgba(0,0,0,0.4); 
+    border: 1px solid var(--line); 
+    color: white; 
+    padding: 12px; 
+    font-size: 12px; 
+    border-radius: 8px;
+    transition: .3s;
+    outline: none;
+}
+.input-field:focus { border-color: var(--orange); box-shadow: 0 0 10px rgba(255,116,23,0.2); }
+
+.btn-action {
+    padding: 10px; 
+    font-size: 11px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    text-transform: uppercase;
+    transition: .3s; 
+    font-weight: 700;
+    border: 1px solid var(--orange);
+}
+
+.btn-get-code { background: var(--orange); color: #000; }
+.btn-get-code:hover { background: #ff943a; transform: scale(1.02); }
+
+.btn-logout { background: transparent; color: #ff4444; border-color: #ff4444; }
+.btn-logout:hover { background: rgba(255,68,68,0.1); transform: scale(1.02); }
+
+.blast-control-panel { 
+    background: rgba(27, 13, 5, 0.6); 
+    border: 1px solid var(--line); 
+    padding: 25px; 
+    border-radius: 24px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.anti-spam-indicator { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 8px;
+}
+
+.status-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.status-col {
+    background: rgba(27, 13, 5, 0.4); 
+    border-radius: 20px;
+    border: 1px solid rgba(255, 133, 35, 0.1); 
+    min-height: 400px; 
+    display: flex; 
+    flex-direction: column;
+    transition: .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.status-col:hover { border-color: var(--orange); background: rgba(35, 15, 8, 0.6); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+.status-col h4 {
+    font-family: 'Barlow Condensed'; text-transform: uppercase; font-size: 16px;
+    text-align: center; padding: 20px; margin: 0;
+    border-bottom: 1px solid var(--line); color: var(--gold); letter-spacing: .15em;
+}
+.card-container { padding: 15px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 600px; }
+.task-card {
+    background: linear-gradient(135deg, #241106, #120803);
+    border: 1px solid #8b421f66; border-radius: 12px;
+    padding: 15px; font-size: 11px; color: var(--cream);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5); transition: .3s; animation: slideIn .4s ease-out both;
+}
+.task-card:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 10px 20px rgba(0,0,0,0.7); }
+.task-card .phone { display: block; font-weight: 700; color: var(--gold); margin-bottom: 8px; font-size: 14px; }
+.task-card .status-tag {
+    font-size: 9px; text-transform: uppercase; padding: 4px 8px;
+    border-radius: 6px; background: rgba(255, 116, 23, 0.1); color: var(--orange);
+}
+
+@keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.reveal{opacity:0;transform:translateY(30px);transition:all .8s cubic-bezier(0.22, 1, 0.36, 1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@media(max-width:1100px){ .cc-top-bar{grid-template-columns: 1fr;} .auth-box{flex-direction: column; text-align: center;} .auth-controls{align-items: center; text-align: center;} }
+@media(max-width:900px){.status-board{grid-template-columns: 1fr!}}
+</style>
+</head>
+<body id="body">
+<canvas id="meteor-canvas" aria-hidden="true"></canvas><div class="noise"></div>
+<header class="nav">
+    <!-- Bagian Logo -->
+    <a class="brand" href="#home">
+        <span class="brand-mark">♜</span>
+        <span>KARESIDENAN<br><span style="color:var(--orange)">PATI / CR 41400</span></span>
+    </a>
+
+    <!-- Bagian Menu Tengah -->
+    <nav class="nav-links">
+        <a href="#identitas">Identitas</a>
+        <a href="#keunggulan">Keunggulan</a>
+        <a href="#misi">Misi</a>
+        <a href="#team">Team 41400</a>
+    </nav>
+
+    <!-- Bagian Tombol Kanan (Dibungkus agar tidak berjauhan) -->
+    <div class="nav-buttons">
+        <a class="nav-cta" href="#team">Masuk Wilayah ↗</a>
+        <a class="nav-cta" href="dashboard.html">PERFORMANCE ↗</a>
+    </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+    <div class="hero-grid"></div>
+    <div class="hero-copy">
+        <div class="eyebrow">Karesidenan Pati · Collection Division</div>
+        <h1>CR <span>41400</span></h1>
+        <p>Disiplin dalam langkah. Tangguh dalam tantangan. Satu tim yang bergerak dengan strategi, fokus, dan semangat untuk hasil terbaik.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="#identitas">Jelajahi Identitas <span>↗</span></a>
+            <a class="btn btn-ghost" href="#misi">Lihat Misi Tim <span>↓</span></a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="rhino-img"></div>
+        <div class="rhino-overlay"></div>
+    </div>
+    <div class="hero-stamp"><strong>TEAM 41400</strong><small>STRONGER TOGETHER · MOVE FORWARD</small></div>
+</section>
+
+<div class="ticker"><div class="ticker-track"><span>✦ <b>TEAM 41400</b></span><span>STRATEGY FIRST</span><span>✦ COLLECTION EXCELLENCE</span><span>ONE TEAM ONE PURPOSE</span><span>✦ KAResIDENAN PATI</span><span>MOVE FORWARD</span><span>✦ <b>TEAM 41400</b></span><span>STRATEGY FIRST</span><span>✦ COLLECTION EXCELLENCE</span><span>ONE TEAM ONE PURPOSE</span><span>✦ KARESIDENAN PATI</span><span>MOVE FORWARD</span></div></div>
+<section class="section" id="identitas"><div class="section-head reveal"><div class="eyebrow">DNA of the team</div><h2>Karakter <span>yang menggerakkan</span></h2><p>Fondasi kerja tim yang kuat: bergerak terarah, saling mendukung, dan menjaga kualitas eksekusi setiap hari.</p></div><div class="feature-grid"><article class="feature reveal"><span class="num">01 / MINDSET</span><div class="icon">◈</div><h3>Strategic Focus</h3><p>Prioritas jelas, analisis tajam, dan langkah yang terukur.</p></article><article class="feature reveal"><span class="num">02 / PEOPLE</span><div class="icon">♧</div><h3>One Team</h3><p>Kolaborasi kuat dengan rasa tanggung jawab bersama.</p></article><article class="feature reveal"><span class="num">03 / EXECUTION</span><div class="icon">⚙</div><h3>Operational Power</h3><p>Eksekusi konsisten, disiplin, dan fokus pada solusi.</p></article><article class="feature reveal"><span class="num">04 / RESULTS</span><div class="icon">↗</div><h3>Performance</h3><p>Terus berkembang, mengevaluasi hasil, dan bergerak maju.</p></article></div></section>
+<section class="section mission" id="keunggulan"><div class="mission-visual reveal" style="position: relative;">
+    <img src="bagian bawah.png" alt="Badak berarmor sebagai maskot Team 41400" loading="lazy">
+    <div style="position: absolute; bottom: 17%; left: 50%; transform: translateX(-50%); background: #1a0d05; color: var(--gold); font-family: 'Barlow Condensed'; font-weight: 900; font-size: 30px; text-transform: uppercase; padding: 2px 30px; border-radius: 4px; white-space: nowrap; z-index: 10; box-shadow: 0 0 15px rgba(0,0,0,0.8); letter-spacing: 2px; border: 1px solid var(--orange);">
+        BRANCH PATI
+    </div>
+</div><div class="mission-copy reveal"><div class="eyebrow">Innovation · Discipline · Results</div><h2>Inovasi yang<br><span style="color:var(--orange)">menggerakkan</span><br>bisnis maju.</h2><p>Seperti badak yang melangkah tanpa gentar, Team 41400 membawa keteguhan, perlindungan, dan daya dorong ke setiap tantangan. Setiap langkah harus punya arah—setiap tindakan harus punya dampak.</p><div class="mission-list"><div><strong>01 / STRATEGI</strong>Kenali medan sebelum bergerak.</div><div><strong>02 / KONSISTENSI</strong>Jaga ritme dan tindak lanjut.</div><div><strong>03 / KOLABORASI</strong>Kuat karena bergerak bersama.</div><div><strong>04 / HASIL</strong>Ukur dampak, perbaiki langkah.</div></div></div></section>
+<section class="team" id="misi"><div class="section-head reveal"><div class="eyebrow" style="justify-content:center">Built with purpose</div><h2>Satu arah.<br><span>Satu kekuatan.</span></h2><p>Keberhasilan bukan hasil satu langkah besar, melainkan rangkaian tindakan konsisten yang dilakukan bersama.</p></div><a class="btn btn-primary reveal" href="#team">Kenali Team 41400 ↗</a></section>
+<section class="team" id="team" style="border-top:1px solid var(--line)"><div class="team-sub reveal">Karesidenan Pati presents</div><div class="team-number reveal">41400</div><div class="team-sub reveal">Team 41400 · Stronger together</div><p class="reveal">Tangguh menghadapi tantangan. Solid dalam kolaborasi. Fokus pada hasil.</p><a class="btn btn-ghost reveal" href="#home">↑ Kembali ke atas</a></section>
+
+<section class="command-center">
+    <div class="section-head reveal">
+        <div class="eyebrow">Departement Operasional</div>
+        <h2>Command <span style="color:var(--orange)">Center - Branch Pati</span></h2>
+        <p>Monitoring Real-time Operasi Blast Team 41400.</p>
+    </div>
+
+    <div class="cc-top-bar reveal">
+       <div class="auth-box">
+            <div id="qr-image"></div>
+            <div class="auth-info">
+                <p>System Connection</p>
+                <span id="conn-status">DISCONNECTED</span>
+                
+                <div class="auth-controls">
+                    <input type="text" id="phone-number" class="input-field" placeholder="Contoh: 0812345678">
+                    <button id="get-code-btn" class="btn-action btn-get-code">Get Pairing Code 🔑</button>
+                    <button id="logout-btn" class="btn-action btn-logout">Logout Device ❌</button>
+                </div>
+                <div id="pairing-display" style="margin-top: 10px; font-family: monospace; font-size: 20px; color: var(--gold); font-weight: bold; text-align: center; letter-spacing: 3px;"></div>
+            </div>
+        </div>
+
+        <div class="blast-control-panel">
+    <div class="anti-spam-indicator">
+        <span style="font-size:10px; color:var(--gold); text-transform:uppercase; letter-spacing:1.5px; font-weight: 600;">🛡️ Anti-Spam Mode:</span>
+        <span style="font-size:13px; color:lime; font-weight:bold; letter-spacing: 1px;">Active (43-200s)</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <input type="file" id="file-input" class="input-field" accept=".xlsx, .xls" style="cursor: pointer;">
+        
+        <!-- BUNGKUS TOMBOL AGAR BERJEJER KE SAMPING -->
+        <div style="display: flex; gap: 10px;">
+            <button id="upload-btn" class="btn btn-primary" style="flex: 2;">Eksekusi Blast ↗</button>
+            <button id="clear-btn" class="btn btn-action" style="flex: 1; background: transparent; color: #ff4444; border-color: #ff4444;">Clear File ❌</button>
+        </div>
+    </div>
+</div>
+
+    <div class="status-board reveal">
+        <div class="status-col"><h4 style="color:#ffb347">Antrean</h4><div class="card-container" id="col-pending"></div></div>
+        <div class="status-col"><h4 style="color:#ffb347">Validasi</h4><div class="card-container" id="col-validating"></div></div>
+        <div class="status-col"><h4 style="color:#ffb347">Berhasil</h4><div class="card-container" id="col-success"></div></div>
+        <div class="status-col"><h4 style="color:#ffb347">Gagal</h4><div class="card-container" id="col-failed"></div></div>
+    </div>
+</section>
+</main>
+<footer class="footer"><span><strong>CR 41400</strong> · Karesidenan Pati</span><span>STRATEGY · EXECUTION · PERFORMANCE</span><span>© <span id="year"></span> TEAM 41400</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+const socket = io('http://localhost:3000');
+
+socket.on('connect', () => { socket.emit('check-connection'); });
+socket.on('connection-status', (status) => {
+    const statusEl = document.getElementById('conn-status');
+    if(statusEl) {
+        statusEl.innerText = status === 'connected' ? "CONNECTED" : "DISCONNECTED";
+        if(status === 'connected') {
+            statusEl.classList.add('status-connected');
+        } else {
+            statusEl.classList.remove('status-connected');
+            statusEl.style.color = "red";
+        }
+    }
+});
+
+document.getElementById('get-code-btn').addEventListener('click', () => {
+    const phone = document.getElementById('phone-number').value;
+    if(!phone) return alert("Masukkan nomor HP!");
+    document.getElementById('pairing-display').innerText = "Requesting...";
+    socket.emit('request-pairing-code', phone);
+});
+
+socket.on('pairing-code', (code) => {
+    document.getElementById('pairing-display').innerText = code;
+    alert("Kode Pairing: " + code);
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+    if(confirm("Yakin mau logout?")) socket.emit('request-logout');
+});
+
+socket.on('logout-status', (msg) => {
+    alert(msg);
+    const statusEl = document.getElementById('conn-status');
+    if(statusEl) {
+        statusEl.innerText = "DISCONNECTED";
+        statusEl.classList.remove('status-connected');
+        statusEl.style.color = "red";
+    }
+});
+
+let qrcode = null;
+function initQR() {
+    const qrContainer = document.getElementById("qr-image");
+    if (qrContainer && !qrcode) {
+        qrcode = new QRCode(qrContainer, { 
+            width: 200, 
+            height: 200, 
+            colorDark : "#000000", 
+            colorLight : "#ffffff", 
+            correctLevel : QRCode.CorrectLevel.H 
+        });
+    }
+}
+
+socket.on('qr', (qr) => {
+    initQR();
+    if(qrcode) {
+        qrcode.clear(); 
+        qrcode.makeCode(qr);
+    }
+});
+
+socket.on('connected', (msg) => {
+    const statusEl = document.getElementById('conn-status');
+    if(statusEl) {
+        statusEl.innerText = "CONNECTED";
+        statusEl.classList.add('status-connected');
+    }
+});
+
+// Gunakan onchange langsung pada elemen input file
+document.getElementById('file-input').onchange = async function(e) {
+    const file = e.target.files[0];
+    if (!file) {
+        console.log("Tidak ada file yang dipilih.");
+        return;
+    }
+
+    console.log("File dipilih:", file.name);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('http://localhost:3000/preview-excel', { 
+            method: 'POST', 
+            body: formData 
+        });
+        const result = await response.json();
+
+        console.log("Respon server preview:", result);
+
+        if (result.success) {
+            const pendingBox = document.getElementById('col-pending');
+            pendingBox.innerHTML = ''; // Bersihkan antrean lama
+
+            result.data.forEach(item => {
+                let card = document.createElement('div');
+                card.id = `card-${item.phone}`;
+                card.className = 'task-card';
+                card.innerHTML = `<span class="phone">${item.phone}</span><span class="status-tag">In Queue...</span>`;
+                card.style.borderColor = 'var(--line)';
+                pendingBox.appendChild(card);
+            });
+
+            console.log(`Berhasil memuat ${result.total} nomor ke kolom Antrean.`);
+        } else {
+            alert("Gagal memuat preview: " + result.message);
+        }
+    } catch (err) {
+        console.error("Error fetch preview:", err);
+        alert("Gagal terhubung ke server untuk preview excel.");
+    }
+};
+socket.on('status', (data) => { 
+    updateBoard(data); 
+});
+// Tambahkan event ini di script index.html Anda
+socket.on('init-queue', (queueList) => {
+    const pendingBox = document.getElementById('col-pending');
+    pendingBox.innerHTML = ''; // Kosongkan dulu jika ada sisa sebelumnya
+
+    queueList.forEach(item => {
+        let card = document.createElement('div');
+        card.id = `card-${item.phone}`;
+        card.className = 'task-card';
+        card.innerHTML = `<span class="phone">${item.phone}</span><span class="status-tag">In Queue...</span>`;
+        card.style.borderColor = 'var(--line)';
+        pendingBox.appendChild(card);
+    });
+});
+// --- BUG FIX START ---
+function updateBoard(data) {
+    const { phone, status } = data;
+    let cardId = `card-${phone}`;
+    let card = document.getElementById(cardId);
+    
+    if (!card) {
+        card = document.createElement('div');
+        card.id = cardId;
+        card.className = 'task-card';
+        card.innerHTML = `<span class="phone">${phone}</span><span class="status-tag">Processing</span>`;
+    }
+
+    if (status === 'pending') {  
+        document.getElementById('col-pending').appendChild(card);
+        card.querySelector('.status-tag').innerText = 'In Queue...';
+        card.style.borderColor = 'var(--line)';
+    } else if (status === 'validating') {
+        document.getElementById('col-validating').appendChild(card);
+        card.querySelector('.status-tag').innerText = 'Validating...';
+        card.style.borderColor = 'var(--gold)';
+    } else if (status === 'success') {
+        document.getElementById('col-success').appendChild(card);
+        card.querySelector('.status-tag').innerText = 'Sent ✅';
+        card.style.borderColor = 'lime';
+    } else if (status === 'failed') {
+        document.getElementById('col-failed').appendChild(card);
+        card.querySelector('.status-tag').innerText = 'Invalid ❌';
+        card.style.borderColor = 'red';
+    }
+}
+// --- BUG FIX END ---
+
+socket.on('completed', (msg) => { 
+    alert(msg); 
+});
+
+(function() {
+    const canvas = document.getElementById('meteor-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let w, h, dpr;
+    let meteors = [], sparks = [], last = 0;
+
+    function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        canvas.style.width = w + 'px';
+        canvas.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        meteors = [];
+        for (let i = 0; i < (w < 700 ? 7 : 14); i++) spawn(true);
+    }
+
+    function spawn(initial = false) {
+        meteors.push({
+            x: Math.random() * w * 1.35 - w * .15,
+            y: initial ? Math.random() * h * .8 : -40 - Math.random() * 180,
+            len: 80 + Math.random() * 150,
+            speed: 7 + Math.random() * 9,
+            angle: Math.PI / 3.3 + (Math.random() - .5) * .22,
+            width: .7 + Math.random() * 1.5,
+            alpha: .35 + Math.random() * .65,
+            glow: 8 + Math.random() * 16
+        });
+    }
+
+    function frame(t) {
+        if (t - last > 420) {
+            spawn();
+            last = t;
+        }
+        ctx.clearRect(0, 0, w, h);
+        for (let i = meteors.length - 1; i >= 0; i--) {
+            const m = meteors[i];
+            const dx = Math.cos(m.angle) * m.speed;
+            const dy = Math.sin(m.angle) * m.speed;
+            const tailX = m.x - Math.cos(m.angle) * m.len;
+            const tailY = m.y - Math.sin(m.angle) * m.len;
+            let g = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+            g.addColorStop(0, `rgba(255,245,208,${m.alpha})`);
+            g.addColorStop(.18, `rgba(255,139,39,${m.alpha * .8})`);
+            g.addColorStop(1, 'rgba(255,92,15,0)');
+            ctx.beginPath();
+            ctx.moveTo(m.x, m.y);
+            ctx.lineTo(tailX, tailY);
+            ctx.strokeStyle = g;
+            ctx.lineWidth = m.width;
+            ctx.shadowBlur = m.glow;
+            ctx.shadowColor = '#ff7b20';
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, 1.6, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff4ce';
+            ctx.fill();
+            m.x += dx;
+            m.y += dy;
+            if (m.x > w + 200 || m.y > h + 100) {
+                meteors.splice(i, 1);
+            }
+        }
+        requestAnimationFrame(frame);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(frame);
+})();
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+        }
+    });
+}, { threshold: .15 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
